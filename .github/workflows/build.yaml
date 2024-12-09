@@ -1,12 +1,12 @@
 name: Build release binaries
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
   schedule:
-    - cron: '46 5 7 * *' # At 05:46 on day-of-month 1 in every 3rd month from January through December
+    - cron: "46 5 7 * *" # At 05:46 on day-of-month 1 in every 3rd month from January through December
 
 jobs:
   build-rust:
@@ -14,11 +14,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust_target: [x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, x86_64-pc-windows-gnu, aarch64-unknown-linux-gnu, riscv64gc-unknown-linux-gnu]
-        os: [ubuntu-latest]
-        include:
-          - rust_target: x86_64-apple-darwin
-            os: macos-latest
+        rust_target: [x86_64-unknown-linux-gnu]
+        # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2004-Readme.md
+        os: [ubuntu-20.04]
     steps:
       - uses: actions/checkout@v3
       - run: find .github
@@ -27,7 +25,7 @@ jobs:
         with:
           rust_target: ${{ matrix.rust_target }}
       - name: Strip binary
-        if: matrix.rust_target == 'x86_64-unknown-linux-musl' 
+        if: matrix.rust_target == 'x86_64-unknown-linux-musl'
         run: |
           strip output_dir/pg2parquet
       - name: Upload artifact
